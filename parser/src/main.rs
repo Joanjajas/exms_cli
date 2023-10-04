@@ -24,6 +24,10 @@ fn run() -> Result<(), Box<dyn Error>> {
 
     let mut file_path = PathBuf::from(&args[1]);
 
+    if file_path.extension().is_some() {
+        return Err("File path must not have an extension".into());
+    }
+
     let students = parse_file(&file_path)?;
     let toml_str = toml::to_string(&students)?;
 
