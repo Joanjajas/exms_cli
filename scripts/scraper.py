@@ -1,3 +1,5 @@
+from getpass import getpass
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -7,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 def main():
     # Input login credentials
     username = input("Username: ")
-    password = input("Password: ")
+    password = getpass("Password: ")
 
     # Create a new instance of the Safari web driver
     driver = webdriver.Safari()
