@@ -6,8 +6,6 @@ use std::process;
 use std::{fs, fs::File};
 use std::{io, io::Write};
 
-use toml;
-
 fn main() {
     if let Err(e) = run() {
         eprintln!("error: {}", e);
