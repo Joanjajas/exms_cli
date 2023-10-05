@@ -33,12 +33,16 @@ def login(driver, username, password):
 
 def navigate_to_grades_page(driver_wait):
     # Enter intranet
-    driver_wait.until(EC.element_to_be_clickable(
-        (By.XPATH, "//div[@id='intranet']//a[2]"))).click()
+    driver_wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//div[@id='intranet']//a[2]"))
+    ).click()
 
     # Enter grades page
-    driver_wait.until(EC.element_to_be_clickable(
-        (By.XPATH, "//div[@id='subgrupo_402']//table[@id='elemento_405']//a"))).click()
+    driver_wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "//div[@id='subgrupo_402']//table[@id='elemento_405']//a")
+        )
+    ).click()
 
 
 if __name__ == "__main__":
