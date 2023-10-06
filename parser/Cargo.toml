@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 toml = "0.8.2"
-indexmap = { version = "2.0.2", features = ["serde-1"] }
+indexmap = { version = "2.0.2", features = ["serde"] }
