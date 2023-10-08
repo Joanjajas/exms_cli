@@ -24,13 +24,18 @@ async def run(playwright):
     # Log in and navigate to the grades page
     await goto_grades(page, username, password)
 
+    print("Script finished successfully")
+
 
 # NOTE: This function uses xpath to locate elements. Although this is not a good practice,
 # the intranet page is a mess and it is the only way to consistently get the wanted elements
 async def goto_grades(page, username, password):
     try:
         # Log in
+        print("Logging in...")
         await login(page, username, password)
+
+        print("Navigating to grades page...")
 
         # Enter intranet
         await page.locator("//div[@id='intranet']//a[2]").click()
