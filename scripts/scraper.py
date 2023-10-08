@@ -1,51 +1,79 @@
+import asyncio
+import sys
 from getpass import getpass
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from playwright.async_api import async_playwright
 
 
-def main():
+UPV_LOGIN_URL = "https://intranet.upv.es/"
+
+
+async def run(playwright):
     # Input login credentials
     username = input("Username: ")
     password = getpass("Password: ")
 
-    # Create a new instance of the Safari web driver
-    driver = webdriver.Safari()
+    # Create a new instance of chromium and open a new page
+    chromium = playwright.chromium
+    browser = await chromium.launch()
+    page = await browser.new_page()
 
-    # Define implicit wait
-    driver_wait = WebDriverWait(driver, 10)
+    # Set a timeout of 5 seconds for each action
+    page.set_default_timeout(5000)
 
-    # Login and navigate to grades page
-    login(driver, username, password)
-    navigate_to_grades_page(driver_wait)
-
-
-def login(driver, username, password):
-    # Go to the login page
-    driver.get("https://intranet.upv.es")
-
-    # Login
-    form = driver.find_element(By.XPATH, "//form[@name='alumno']")
-    form.find_element(By.XPATH, "//input[@name='dni']").send_keys(username)
-    form.find_element(By.XPATH, "//input[@name='clau']").send_keys(password)
-    form.find_element(By.XPATH, "//input[@class='upv_btsubmit']").click()
+    # Log in and navigate to the grades page
+    await goto_grades(page, username, password)
 
 
-def navigate_to_grades_page(driver_wait):
-    # Enter intranet
-    driver_wait.until(
-        EC.element_to_be_clickable((By.XPATH, "//div[@id='intranet']//a[2]"))
-    ).click()
+# NOTE: This function uses xpath to locate elements. Although this is not a good practice,
+# the intranet page is a mess and it is the only way to consistently get the wanted elements
+async def goto_grades(page, username, password):
+    try:
+        # Log in
+        await login(page, username, password)
 
-    # Enter grades page
-    driver_wait.until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//div[@id='subgrupo_402']//table[@id='elemento_405']//a")
+        # Enter intranet
+        await page.locator("//div[@id='intranet']//a[2]").click()
+
+        # Enter grades page
+        await page.locator(
+            "//div[@id='subgrupo_402']//table[@id='elemento_405']//a"
+        ).click()
+
+        # Check if we are in the grades page
+        assert await page.title() == "UPV - Menú Intranet"
+
+    except Exception as err:
+        print(f"Error ocurred while navigating to grades: {err}", file=sys.stderr)
+        exit(1)
+
+
+async def login(page, username, password):
+    try:
+        # Go to the login page
+        await page.goto(UPV_LOGIN_URL)
+
+        # Fill the login form and submit it
+        form = page.locator("form[name='alumno']")
+        await form.locator("input[name='dni']").fill(username)
+        await form.locator("input[name='clau']").fill(password)
+        await form.locator("input[type='submit']").click()
+
+        # Check if the login was succesfull
+        assert await page.title() == "Mi UPV"
+
+    except AssertionError:
+        print(
+            "Login failed. Make sure to use a valid username and password.",
+            file=sys.stderr,
         )
-    ).click()
+        exit(1)
+
+
+async def main():
+    async with async_playwright() as playwright:
+        await run(playwright)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
