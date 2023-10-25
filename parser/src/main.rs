@@ -1,8 +1,7 @@
 use indexmap::IndexMap;
-use std::env;
 use std::error::Error;
 use std::path::{Path, PathBuf};
-use std::process;
+use std::{env, process};
 use std::{fs, fs::File};
 use std::{io, io::Write};
 

@@ -9,10 +9,6 @@ UPV_LOGIN_URL = "https://intranet.upv.es/"
 
 
 async def run(playwright):
-    # Input login credentials
-    username = input("Username: ")
-    password = getpass("Password: ")
-
     # Create a new instance of chromium and open a new page
     chromium = playwright.chromium
     browser = await chromium.launch()
@@ -22,19 +18,17 @@ async def run(playwright):
     page.set_default_timeout(5000)
 
     # Log in and navigate to the grades page
-    await goto_grades(page, username, password)
+    await goto_grades(page)
+    await login(page)
 
     print("Script finished successfully")
 
 
 # NOTE: This function uses xpath to locate elements. Although this is not a good practice,
 # the intranet page is a mess and it is the only way to consistently get the wanted elements
-async def goto_grades(page, username, password):
+async def goto_grades(page):
     try:
         # Log in
-        print("Logging in...")
-        await login(page, username, password)
-
         print("Navigating to grades page...")
 
         # Enter intranet
@@ -53,7 +47,13 @@ async def goto_grades(page, username, password):
         exit(1)
 
 
-async def login(page, username, password):
+async def login(page):
+    # Input login credentials
+    username = input("Username: ")
+    password = getpass("Password: ")
+
+    print("Logging in...")
+
     try:
         # Go to the login page
         await page.goto(UPV_LOGIN_URL)
