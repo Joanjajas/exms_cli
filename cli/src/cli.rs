@@ -25,5 +25,5 @@ pub struct Options {
 
     /// Filter the students by another file containing exam results
     #[arg(short, long, value_name = "FILE")]
-    pub file_filter: Option<PathBuf>,
+    pub file_filter: Option<Vec<PathBuf>>,
 }
