@@ -54,14 +54,16 @@ async def parse_exam(page: Page, subject: str, exam_name: str) -> Exam:
 
     # Get the exam students
     students = []
-    for student in await table.locator("//td[1]").all():
-        if student.text_content() is not None:
+    for element in await table.locator("//td[1]").all():
+        student = await element.text_content()
+        if student is not None:
             students.append(student)
 
     # Get the exam grades
     grades = []
-    for grade in await table.locator("//td[2]").all():
-        if grade.text_content() is not None:
+    for element in await table.locator("//td[2]").all():
+        grade = await element.text_content()
+        if grade is not None:
             grades.append(grade)
 
     return Exam(subject, exam_name, students, grades)
