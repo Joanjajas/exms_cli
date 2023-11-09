@@ -1,4 +1,6 @@
 import asyncio
+import os
+import subprocess
 
 from playwright.async_api import async_playwright
 from playwright.async_api import Page, Playwright
@@ -9,6 +11,7 @@ from parser import parse_grades
 UPV_LOGIN_URL = "https://intranet.upv.es/"
 USERNAME = "20934366"
 PASSWORD = "cuswiw-sukti0-hehbEv"
+EXAM_FILES_PATH = "/Users/joan/Downloads/not/"
 
 
 async def run(playwright: Playwright):
@@ -30,6 +33,11 @@ async def run(playwright: Playwright):
 
     # Create a file for all parsed exams
     [exam.create_file() for exam in exams]
+
+    # Parse exams in the correct toml format
+    for root, _, files in os.walk(EXAM_FILES_PATH):
+        for file in files:
+            subprocess.run(["parser", f"{root}/{file}"])
 
 
 async def login(page: Page):
