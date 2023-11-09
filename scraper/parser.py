@@ -1,5 +1,3 @@
-import os
-
 from playwright.async_api import Page
 
 from exam import Exam
@@ -14,8 +12,8 @@ async def parse_grades(page: Page) -> list[Exam]:
     grades_table_rows = grades_table.locator("//tr").all()
 
     exams = []
-
     subject = ""
+
     for row in await grades_table_rows:
         row_elements_count = await row.locator("//td").count()
 
@@ -24,16 +22,16 @@ async def parse_grades(page: Page) -> list[Exam]:
             # Get the subject name
             subject = await row.text_content()
 
-            # Create a folder for the subject
-            path = f"/Users/joan/Downloads/not/{subject}"
-            if not os.path.exists(path):
-                os.mkdir(path)
-
         # If the row has 4 elements, it is an exam with this properties:
         # [Course, Date, Exam name, Grade]
         if row_elements_count == 4:
             exam_props = row.locator("//td")
             exam_name = await exam_props.nth(2).text_content()
+
+            # If we can't get the exam name, something went wrong, so we continue
+            # with the next row
+            if exam_name is None:
+                continue
 
             # Click on the exam to see the grades
             await exam_props.nth(3).click()
@@ -47,20 +45,23 @@ async def parse_grades(page: Page) -> list[Exam]:
     return exams
 
 
-async def parse_exam(page: Page, subject: str | None, exam_name: str | None) -> Exam:
+async def parse_exam(page: Page, subject: str, exam_name: str) -> Exam:
     # Wait for page to load
     await page.wait_for_event("load")
 
     # Get the table with the grades
     table = page.locator("//table[@class='upv_listacolumnas']//tbody")
 
-    # Get the names and grades of the students
-    names = await table.locator("//td[1]").all()
-    grades = await table.locator("//td[2]").all()
+    # Get the exam students
+    students = []
+    for student in await table.locator("//td[1]").all():
+        if student.text_content() is not None:
+            students.append(student)
 
-    return Exam(
-        subject,
-        exam_name,
-        [await name.text_content() for name in names],
-        [await grade.text_content() for grade in grades],
-    )
+    # Get the exam grades
+    grades = []
+    for grade in await table.locator("//td[2]").all():
+        if grade.text_content() is not None:
+            grades.append(grade)
+
+    return Exam(subject, exam_name, students, grades)

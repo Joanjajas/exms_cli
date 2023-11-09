@@ -9,12 +9,12 @@ class Exam:
         self.grades = grades
 
     def create_file(self):
-        # Create the subject folder if it doesn't exist
+        # Create a folder for the subject if it doesn't exist
         dir_path = f"/Users/joan/Downloads/not/{self.subject}"
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
 
-        # Create the exam file
+        # Create a file with the exam data
         file_path = f"/Users/joan/Downloads/not/{self.subject}/{self.name}.txt"
         with open(file_path, "w") as f:
             f.write(self.__str__())

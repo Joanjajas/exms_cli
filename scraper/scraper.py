@@ -28,6 +28,7 @@ async def run(playwright: Playwright):
     # Parse the grades
     exams = await parse_grades(page)
 
+    # Create a file for all parsed exams
     [exam.create_file() for exam in exams]
 
 
