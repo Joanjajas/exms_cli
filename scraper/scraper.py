@@ -8,7 +8,7 @@ from logger import log
 UPV_LOGIN_URL = "https://intranet.upv.es/"
 USERNAME = "20934366"
 PASSWORD = "cuswiw-sukti0-hehbEv"
-BASE_DIR = "/Users/joan/Downloads/not/"
+BASE_DIR = "/Users/joan/Downloads/not"
 
 
 def run(playwright: Playwright):
