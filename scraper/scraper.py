@@ -59,6 +59,9 @@ def goto_grades(page: Page):
     # Enter grades page
     page.locator("//div[@id='subgrupo_402']//table[@id='elemento_405']//a").click()
 
+    page.get_by_label("Todos").check()
+    page.get_by_role("button", name="Consultar").click()
+
 
 def main():
     with sync_playwright() as playwright:

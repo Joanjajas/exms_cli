@@ -50,7 +50,7 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
 
             # Check if there is grade, if not, continue with the next row
             if exam_props.nth(3).text_content() == "":
-                log(f"Couldn't parse [{subject}: {exam_name}]", level="ERROR")
+                log(f"Couldn't parse [{subject} -> {exam_name}]", level="ERROR")
                 continue
 
             # Click on the exam to see the grades
@@ -72,7 +72,7 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
 def parse_exam(page: Page, subject: str, exam_name: str) -> Exam | None:
     # If the page title is "Error", something went wrong, so we go back
     if page.title() == "Error":
-        log(f"Couldn't parse [{subject}: {exam_name}]", level="ERROR")
+        log(f"Couldn't parse [{subject} -> {exam_name}]", level="ERROR")
         return
 
     # Get the table with the grades
@@ -80,7 +80,7 @@ def parse_exam(page: Page, subject: str, exam_name: str) -> Exam | None:
 
     # If the table is empty, something went wrong, so we go back
     if table.count() == 0:
-        log(f"Couldn't parse [{subject}: {exam_name}]", level="ERROR")
+        log(f"Couldn't parse [{subject} -> {exam_name}]", level="ERROR")
         return
 
     # Get the exam students
