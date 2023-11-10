@@ -200,9 +200,9 @@ dependencies = [
 
 [[package]]
 name = "exms"
-version = "0.1.90"
+version = "0.1.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "853b3b9a529a4cb377ac061cac0a23e14435ab0e4e95c4e6c868f6cf0702c8cd"
+checksum = "57ad50890e44ae83994dac6dd0973afb743fec8680019d4d4077a1563577d06b"
 dependencies = [
  "colored",
  "indexmap",

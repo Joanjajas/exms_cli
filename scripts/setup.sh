@@ -13,7 +13,7 @@ cargo build --release
 cargo doc --no-deps
 
 # Copy the binaries and scripts to their respective directories
-sudo cp ./target/release/cli $bin_dir/cli
+sudo cp ./target/release/cli $bin_dir/exms
 sudo cp ./target/release/parser $bin_dir/parser
 sudo cp scripts/scraper.sh $bin_dir/scraper
 sudo cp -r scraper /usr/local/
