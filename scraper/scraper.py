@@ -5,10 +5,10 @@ from parser import parse_to_toml
 from logger import log
 
 
-UPV_LOGIN_URL = "https://intranet.upv.es/"
-USERNAME = "20934366"
-PASSWORD = "cuswiw-sukti0-hehbEv"
 BASE_DIR = "/Users/joan/Downloads/not"
+UPV_LOGIN_URL = "https://intranet.upv.es/"
+USERNAME = ""
+PASSWORD = ""
 
 
 def run(playwright: Playwright):
@@ -19,7 +19,7 @@ def run(playwright: Playwright):
     page = context.new_page()
 
     # Set a timeout of 5 seconds for each action
-    page.set_default_timeout(15000)
+    page.set_default_timeout(5000)
 
     # Log in and navigate to the grades page
     login(page)
