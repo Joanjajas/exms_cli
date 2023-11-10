@@ -8,8 +8,8 @@ EXAM_FILES_PATH = "/Users/joan/Downloads/not"
 
 class Exam:
     def __init__(self, subject: str, name: str, students: list[str], grades: list[str]):
-        self.name = name.lower()
-        self.subject = subject.lower()
+        self.name = name.lower().replace("/", "|").replace(".", "_")
+        self.subject = subject.lower().replace("/", "|").replace(".", ":")
         self.students = students
         self.grades = grades
 

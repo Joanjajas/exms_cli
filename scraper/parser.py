@@ -33,38 +33,41 @@ def parse_exams(page: Page) -> None:
             # If we can't get the subject or the exam name, something went wrong,
             # so we continue with the next row
             if subject is None or exam_name is None:
+                log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
                 continue
 
             # Check if there is grade, if not, continue with the next row
             if exam_props.nth(3).text_content() == "":
+                log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
                 continue
 
             # Click on the exam to see the grades
             exam_props.nth(3).click()
 
-            # If the page title is "Error", something went wrong, so we continue
-            # with the next row
-            if page.title() == "Error":
-                log(f"Couldn't parse {subject}: {exam_name}")
-                page.go_back()
-                continue
+            # Wait for page to load
+            page.wait_for_event("load")
 
             # If everything went well, we parse the exam and create the file
-            exam = parse_exam(page, subject, exam_name)
-            exam.create_file()
+            parse_exam(page, subject, exam_name)
 
             # Go back to the grades page to keep parsing exams
             page.go_back()
 
 
-def parse_exam(page: Page, subject: str, exam_name: str) -> Exam:
-    # Wait for page to load
-    page.wait_for_event("load")
+def parse_exam(page: Page, subject: str, exam_name: str) -> None:
+    # If the page title is "Error", something went wrong, so we go back
+    if page.title() == "Error":
+        log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
+        return
 
     # Get the table with the grades
     table = page.locator("//table[@class='upv_listacolumnas']//tbody")
 
-    # Get the exam students
+    # If the table is empty, something went wrong, so we go back
+    if table.count() == 0:
+        log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
+        return
+
     students = []
     for element in table.locator("//td[1]").all():
         student = element.text_content()
@@ -78,4 +81,5 @@ def parse_exam(page: Page, subject: str, exam_name: str) -> Exam:
         if grade is not None:
             grades.append(grade)
 
-    return Exam(subject, exam_name, students, grades)
+    exam = Exam(subject, exam_name, students, grades)
+    exam.create_file()
