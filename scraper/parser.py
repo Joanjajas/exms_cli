@@ -1,11 +1,14 @@
-from playwright.async_api import Page
+from playwright.sync_api import Page
 
 from exam import Exam
+from logger import log
 
 
-async def parse_grades(page: Page) -> list[Exam]:
+def parse_exams(page: Page) -> list[Exam]:
+    log("Parsing exams...")
+
     # Wait for the page to load
-    await page.wait_for_event("load")
+    page.wait_for_event("load")
 
     # Get the table with the grades
     grades_table = page.locator("//div[@class='container'][4]")
@@ -14,19 +17,19 @@ async def parse_grades(page: Page) -> list[Exam]:
     exams = []
     subject = ""
 
-    for row in await grades_table_rows:
-        row_elements_count = await row.locator("//td").count()
+    for row in grades_table_rows:
+        row_elements_count = row.locator("//td").count()
 
         # If the row has only one element, it is the subject name
         if row_elements_count == 1:
             # Get the subject name
-            subject = await row.text_content()
+            subject = row.text_content()
 
         # If the row has 4 elements, it is an exam with this properties:
         # [Course, Date, Exam name, Grade]
         if row_elements_count == 4:
             exam_props = row.locator("//td")
-            exam_name = await exam_props.nth(2).text_content()
+            exam_name = exam_props.nth(2).text_content()
 
             # If we can't get the exam name, something went wrong, so we continue
             # with the next row
@@ -34,35 +37,35 @@ async def parse_grades(page: Page) -> list[Exam]:
                 continue
 
             # Click on the exam to see the grades
-            await exam_props.nth(3).click()
+            exam_props.nth(3).click()
 
             # Parse the grades of the exam and add it to the list
-            exams.append(await parse_exam(page, subject, exam_name))
+            exams.append(parse_exam(page, subject, exam_name))
 
             # Go back to the grades page to keep parsing exams
-            await page.go_back()
+            page.go_back()
 
     return exams
 
 
-async def parse_exam(page: Page, subject: str, exam_name: str) -> Exam:
+def parse_exam(page: Page, subject: str, exam_name: str) -> Exam:
     # Wait for page to load
-    await page.wait_for_event("load")
+    page.wait_for_event("load")
 
     # Get the table with the grades
     table = page.locator("//table[@class='upv_listacolumnas']//tbody")
 
     # Get the exam students
     students = []
-    for element in await table.locator("//td[1]").all():
-        student = await element.text_content()
+    for element in table.locator("//td[1]").all():
+        student = element.text_content()
         if student is not None:
             students.append(student)
 
     # Get the exam grades
     grades = []
-    for element in await table.locator("//td[2]").all():
-        grade = await element.text_content()
+    for element in table.locator("//td[2]").all():
+        grade = element.text_content()
         if grade is not None:
             grades.append(grade)
 

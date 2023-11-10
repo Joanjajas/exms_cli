@@ -1,12 +1,15 @@
+import subprocess
 import os
+
+from logger import log
 
 EXAM_FILES_PATH = "/Users/joan/Downloads/not"
 
 
 class Exam:
     def __init__(self, subject: str, name: str, students: list[str], grades: list[str]):
-        self.name = name
-        self.subject = subject
+        self.name = name.lower()
+        self.subject = subject.lower()
         self.students = students
         self.grades = grades
 
@@ -17,9 +20,13 @@ class Exam:
             os.mkdir(dir_path)
 
         # Create a file with the exam data
-        file_path = f"{EXAM_FILES_PATH}/{self.subject}/{self.name}"
+        file_path = f"{dir_path}/{self.name}"
         with open(file_path, "w") as f:
             f.write(self.__str__())
+
+        # Parse the file in the correct toml format
+        subprocess.run(["parser", file_path])
+        log(f"Created file {file_path}.toml")
 
     def __str__(self):
         str = ""
