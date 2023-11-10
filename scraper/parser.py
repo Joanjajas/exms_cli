@@ -4,7 +4,7 @@ from exam import Exam
 from logger import log
 
 
-def parse_exams(page: Page) -> list[Exam]:
+def parse_exams(page: Page) -> None:
     log("Parsing exams...")
 
     # Wait for the page to load
@@ -14,7 +14,6 @@ def parse_exams(page: Page) -> list[Exam]:
     grades_table = page.locator("//div[@class='container'][4]")
     grades_table_rows = grades_table.locator("//tr").all()
 
-    exams = []
     subject = ""
 
     for row in grades_table_rows:
@@ -27,25 +26,35 @@ def parse_exams(page: Page) -> list[Exam]:
 
         # If the row has 4 elements, it is an exam with this properties:
         # [Course, Date, Exam name, Grade]
-        if row_elements_count == 4:
+        elif row_elements_count == 4:
             exam_props = row.locator("//td")
             exam_name = exam_props.nth(2).text_content()
 
-            # If we can't get the exam name, something went wrong, so we continue
-            # with the next row
-            if exam_name is None:
+            # If we can't get the subject or the exam name, something went wrong,
+            # so we continue with the next row
+            if subject is None or exam_name is None:
+                continue
+
+            # Check if there is grade, if not, continue with the next row
+            if exam_props.nth(3).text_content() == "":
                 continue
 
             # Click on the exam to see the grades
             exam_props.nth(3).click()
 
-            # Parse the grades of the exam and add it to the list
-            exams.append(parse_exam(page, subject, exam_name))
+            # If the page title is "Error", something went wrong, so we continue
+            # with the next row
+            if page.title() == "Error":
+                log(f"Couldn't parse {subject}: {exam_name}")
+                page.go_back()
+                continue
+
+            # If everything went well, we parse the exam and create the file
+            exam = parse_exam(page, subject, exam_name)
+            exam.create_file()
 
             # Go back to the grades page to keep parsing exams
             page.go_back()
-
-    return exams
 
 
 def parse_exam(page: Page, subject: str, exam_name: str) -> Exam:

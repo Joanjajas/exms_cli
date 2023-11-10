@@ -1,6 +1,3 @@
-import os
-import subprocess
-
 from playwright.sync_api import sync_playwright
 from playwright.sync_api import Page, Playwright
 
@@ -22,7 +19,7 @@ def run(playwright: Playwright):
     page = context.new_page()
 
     # Set a timeout of 5 seconds for each action
-    page.set_default_timeout(5000)
+    page.set_default_timeout(15000)
 
     # Log in and navigate to the grades page
     login(page)
@@ -30,9 +27,6 @@ def run(playwright: Playwright):
 
     # Parse the grades
     exams = parse_exams(page)
-
-    # Create a file for all parsed exams
-    [exam.create_file() for exam in exams]
 
     log("\nDone!")
 
@@ -66,6 +60,9 @@ def goto_grades(page: Page):
 
     # Enter grades page
     page.locator("//div[@id='subgrupo_402']//table[@id='elemento_405']//a").click()
+
+    page.get_by_label("Todos").check()
+    page.get_by_role("button", name="Consultar").click()
 
 
 def main():
