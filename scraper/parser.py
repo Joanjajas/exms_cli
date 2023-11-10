@@ -1,7 +1,10 @@
+import os
+
 from playwright.sync_api import Page
 
 from exam import Exam
 from logger import log
+from cache import Cache
 
 
 def parse_to_toml(page: Page, base_dir: str) -> None:
@@ -9,6 +12,10 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
 
     # Wait for the page to load
     page.wait_for_event("load")
+
+    # Get the cache
+    cache_path = os.path.join(base_dir, "cache.json")
+    cache = Cache(cache_path)
 
     # Get the table with the grades
     grades_table = page.locator("//div[@class='container'][4]")
@@ -33,12 +40,16 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
             # If we can't get the subject or the exam name, something went wrong,
             # so we continue with the next row
             if subject is None or exam_name is None:
-                log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
+                log("Couldn't parse subject or exam name. Skipping", level="ERROR")
                 continue
 
             # Check if there is grade, if not, continue with the next row
             if exam_props.nth(3).text_content() == "":
                 log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
+                continue
+
+            # If the exam is already in the cache, we continue with the next row
+            if cache.is_cached(exam_name):
                 continue
 
             # Click on the exam to see the grades
@@ -51,9 +62,13 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
             exam = parse_exam(page, subject, exam_name)
             if exam is not None:
                 exam.create_file(base_dir)
+                cache.add(subject, exam_name)
 
             # Go back to the grades page to keep parsing exams
             page.go_back()
+
+    # Write the cache
+    cache.write()
 
 
 def parse_exam(page: Page, subject: str, exam_name: str) -> Exam | None:
