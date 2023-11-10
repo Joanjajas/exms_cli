@@ -38,9 +38,10 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
                 log("Couldn't parse subject or exam name. Skipping", level="ERROR")
                 continue
 
-            # Check if the exam file already exists
+            # If we already have the exam parsed in the fylesystem, we skip it
             exam_path = os.path.join(base_dir, subject, exam_name, ".toml")
             if os.path.exists(exam_path):
+                log(f"{subject}: {exam_name} already parsed. Skipping")
                 continue
 
             # Check if there is grade, if not, continue with the next row
