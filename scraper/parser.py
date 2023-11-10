@@ -4,7 +4,7 @@ from exam import Exam
 from logger import log
 
 
-def parse_exams(page: Page) -> None:
+def parse_to_toml(page: Page, base_dir: str) -> None:
     log("Parsing exams...")
 
     # Wait for the page to load
@@ -48,13 +48,15 @@ def parse_exams(page: Page) -> None:
             page.wait_for_event("load")
 
             # If everything went well, we parse the exam and create the file
-            parse_exam(page, subject, exam_name)
+            exam = parse_exam(page, subject, exam_name)
+            if exam is not None:
+                exam.create_file(base_dir)
 
             # Go back to the grades page to keep parsing exams
             page.go_back()
 
 
-def parse_exam(page: Page, subject: str, exam_name: str) -> None:
+def parse_exam(page: Page, subject: str, exam_name: str) -> Exam | None:
     # If the page title is "Error", something went wrong, so we go back
     if page.title() == "Error":
         log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
@@ -81,5 +83,4 @@ def parse_exam(page: Page, subject: str, exam_name: str) -> None:
         if grade is not None:
             grades.append(grade)
 
-    exam = Exam(subject, exam_name, students, grades)
-    exam.create_file()
+    return Exam(subject, exam_name, students, grades)

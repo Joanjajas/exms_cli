@@ -1,14 +1,14 @@
 from playwright.sync_api import sync_playwright
 from playwright.sync_api import Page, Playwright
 
-from parser import parse_exams
+from parser import parse_to_toml
 from logger import log
 
 
 UPV_LOGIN_URL = "https://intranet.upv.es/"
 USERNAME = "20934366"
 PASSWORD = "cuswiw-sukti0-hehbEv"
-EXAM_FILES_PATH = "/Users/joan/Downloads/not/"
+BASE_DIR = "/Users/joan/Documents/UPV/"
 
 
 def run(playwright: Playwright):
@@ -25,10 +25,8 @@ def run(playwright: Playwright):
     login(page)
     goto_grades(page)
 
-    # Parse the grades
-    exams = parse_exams(page)
-
-    log("\nDone!")
+    # Parses each exam into a toml file
+    parse_to_toml(page, BASE_DIR)
 
 
 def login(page: Page):
