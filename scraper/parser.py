@@ -35,18 +35,22 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
             # If we can't get the subject or the exam name, something went wrong,
             # so we continue with the next row
             if subject is None or exam_name is None:
-                log("Couldn't parse subject or exam name. Skipping", level="ERROR")
+                log("Couldn't parse subject or exam name, skipping", level="ERROR")
                 continue
 
+            # Format subject and exam appropriately
+            subject = subject.lower().replace(" ", "_").replace(".", "_")
+            exam_name = exam_name.lower().replace("/", "|").replace(".", "_")
+
             # If we already have the exam parsed in the fylesystem, we skip it
-            exam_path = os.path.join(base_dir, subject, exam_name, ".toml")
+            exam_path = os.path.join(base_dir, subject, f"{exam_name}.toml")
             if os.path.exists(exam_path):
-                log(f"{subject}: {exam_name} already parsed. Skipping")
+                log(f"[{subject} -> {exam_name}] already parsed, skipping")
                 continue
 
             # Check if there is grade, if not, continue with the next row
             if exam_props.nth(3).text_content() == "":
-                log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
+                log(f"Couldn't parse [{subject}: {exam_name}]", level="ERROR")
                 continue
 
             # Click on the exam to see the grades
@@ -57,6 +61,7 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
 
             # If everything went well, we parse the exam and create the file
             exam = parse_exam(page, subject, exam_name)
+
             if exam is not None:
                 exam.create_file(base_dir)
 
@@ -67,7 +72,7 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
 def parse_exam(page: Page, subject: str, exam_name: str) -> Exam | None:
     # If the page title is "Error", something went wrong, so we go back
     if page.title() == "Error":
-        log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
+        log(f"Couldn't parse [{subject}: {exam_name}]", level="ERROR")
         return
 
     # Get the table with the grades
@@ -75,9 +80,10 @@ def parse_exam(page: Page, subject: str, exam_name: str) -> Exam | None:
 
     # If the table is empty, something went wrong, so we go back
     if table.count() == 0:
-        log(f"Couldn't parse {subject}: {exam_name}", level="ERROR")
+        log(f"Couldn't parse [{subject}: {exam_name}]", level="ERROR")
         return
 
+    # Get the exam students
     students = []
     for element in table.locator("//td[1]").all():
         student = element.text_content()

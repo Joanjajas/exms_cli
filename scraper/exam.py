@@ -6,8 +6,8 @@ from logger import log
 
 class Exam:
     def __init__(self, subject: str, name: str, students: list[str], grades: list[str]):
-        self.name = name.lower().replace("/", "|").replace(".", "_")
-        self.subject = subject.lower().replace(".", "_").replace(" ", "_")
+        self.name = name
+        self.subject = subject
         self.students = students
         self.grades = grades
 
@@ -25,7 +25,7 @@ class Exam:
 
             # Parse the file in the correct toml format
             subprocess.run(["parser", file_path])
-            log(f"Created file {file_path}.toml")
+            log(f"Created file '{file_path}.toml'")
 
     def __str__(self):
         str = ""
