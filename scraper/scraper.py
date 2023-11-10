@@ -18,8 +18,8 @@ def run(playwright: Playwright):
     context = browser.new_context()
     page = context.new_page()
 
-    # Set a timeout of 5 seconds for each action
-    page.set_default_timeout(5000)
+    # Set a timeout of 10 seconds for each action
+    page.set_default_timeout(10000)
 
     # Log in and navigate to the grades page
     login(page)
