@@ -56,9 +56,6 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
             # Click on the exam to see the grades
             exam_props.nth(3).click()
 
-            # Wait for page to load
-            page.wait_for_event("load")
-
             # If everything went well, we parse the exam and create the file
             exam = parse_exam(page, subject, exam_name)
 
