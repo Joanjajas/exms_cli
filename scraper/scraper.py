@@ -15,8 +15,7 @@ def run(playwright: Playwright):
     # Create a new instance of chromium and open a new page
     chromium = playwright.chromium
     browser = chromium.launch()
-    context = browser.new_context()
-    page = context.new_page()
+    page = browser.new_page()
 
     # Set a timeout of 10 seconds for each action
     page.set_default_timeout(10000)
