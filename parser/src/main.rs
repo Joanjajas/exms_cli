@@ -1,28 +1,29 @@
-use indexmap::IndexMap;
-use std::error::Error;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use std::{fs, fs::File};
-use std::{io, io::Write};
+
+use anyhow::Result;
+use indexmap::IndexMap;
 
 fn main() {
-    if let Err(e) = run() {
-        eprintln!("error: {}", e);
+    if let Err(err) = run() {
+        eprintln!("error: {}", err);
         process::exit(1)
     }
 }
 
-fn run() -> Result<(), Box<dyn Error>> {
+fn run() -> Result<()> {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
-        return Err("File path required".into());
+        anyhow::bail!("File path required");
     }
 
     let mut file_path = PathBuf::from(&args[1]);
 
     if file_path.extension().is_some() {
-        return Err("File path must not have an extension".into());
+        anyhow::bail!("File should not have an extension");
     }
 
     let students = parse_file(&file_path)?;
@@ -39,7 +40,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn parse_file<P: AsRef<Path>>(path: P) -> Result<IndexMap<String, f32>, io::Error> {
+fn parse_file<T: AsRef<Path>>(path: T) -> Result<IndexMap<String, f32>> {
     // Read file content into a String
     let file_content = fs::read_to_string(path)?;
 

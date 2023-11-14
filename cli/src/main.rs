@@ -1,11 +1,12 @@
 mod cli;
 
+use std::process;
+
 use clap::Parser;
 use cli::Options;
 use colored::Colorize;
 use exms::error::ParseError;
 use exms::exam::Exam;
-use std::process;
 
 fn main() {
     // Load command line options
