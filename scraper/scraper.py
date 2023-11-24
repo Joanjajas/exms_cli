@@ -58,6 +58,9 @@ def goto_grades(page: Page):
     # Enter grades page
     page.locator("//div[@id='subgrupo_402']//table[@id='elemento_405']//a").click()
 
+    # Wait for the page to load
+    page.wait_for_event("load")
+
 
 def main():
     with sync_playwright() as playwright:

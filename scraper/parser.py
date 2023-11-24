@@ -9,9 +9,6 @@ from logger import log
 def parse_to_toml(page: Page, base_dir: str) -> None:
     log("Parsing exams...")
 
-    # Wait for the page to load
-    page.wait_for_event("load")
-
     # Get the table with the grades
     grades_table = page.locator("//div[@class='container'][4]")
     grades_table_rows = grades_table.locator("//tr").all()
@@ -55,6 +52,9 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
 
             # Click on the exam to see the grades
             exam_props.nth(3).click()
+
+            # Wait for the page to load
+            page.wait_for_event("load")
 
             # If everything went well, we parse the exam and create the file
             exam = parse_exam(page, subject, exam_name)
