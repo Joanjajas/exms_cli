@@ -22,6 +22,10 @@ fn main() {
 fn run(options: Options) -> Result<(), ParseError> {
     let mut exam = Exam::from_file(&options.file)?;
 
+    if let Some(max_grade) = options.max_grade {
+        exam.set_max_grade(max_grade);
+    }
+
     exam.summary();
 
     if options.histogram {
@@ -48,6 +52,10 @@ fn run(options: Options) -> Result<(), ParseError> {
     if options.name_filter.is_some() || options.file_filter.is_some() {
         exam.set_name("Filter results");
         exam.summary();
+
+        if options.histogram {
+            exam.histogram();
+        }
     }
 
     if options.print_students {
