@@ -9,7 +9,11 @@ pub struct Options {
 
     /// Print students information in a table
     #[arg(short, long)]
-    pub print: bool,
+    pub print_students: bool,
+
+    /// Print the histogram of the grades
+    #[arg(short = 'H', long)]
+    pub histogram: bool,
 
     /// Sort the students based on their grade in descending order
     #[arg(short, long, conflicts_with("alphabetic_sort"), requires("print"))]

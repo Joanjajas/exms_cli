@@ -22,7 +22,11 @@ fn main() {
 fn run(options: Options) -> Result<(), ParseError> {
     let mut exam = Exam::from_file(&options.file)?;
 
-    exam.print_statistics("General statistics");
+    exam.summary();
+
+    if options.histogram {
+        exam.histogram();
+    }
 
     if options.grade_sort {
         exam.sort_by_grade();
@@ -42,11 +46,12 @@ fn run(options: Options) -> Result<(), ParseError> {
 
     // Print filtered statistics only if there is a filter applied
     if options.name_filter.is_some() || options.file_filter.is_some() {
-        exam.print_statistics("Filtered statistics");
+        exam.set_name("Filter results");
+        exam.summary();
     }
 
-    if options.print {
-        exam.print_students();
+    if options.print_students {
+        exam.students();
     }
 
     Ok(())
