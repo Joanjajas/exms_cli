@@ -118,6 +118,7 @@ checksum = "702fc72eb24e5a1e48ce58027a675bc24edd52096d5397d4aea7c6dd9eca0bd1"
 name = "cli"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "clap",
  "colored",
  "exms",
@@ -216,9 +217,9 @@ dependencies = [
 
 [[package]]
 name = "exms"
-version = "0.2.16"
+version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "785d33b1046ad38d430ad031f237530c54b3c12dd4a62be9e7b1c5727b5ba154"
+checksum = "0932ced6178e5a5f44fdaa0c4c6a084852d00ec948766af7a81018b39095120a"
 dependencies = [
  "colored",
  "indexmap",

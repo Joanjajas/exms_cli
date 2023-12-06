@@ -2,15 +2,15 @@ mod cli;
 
 use std::process;
 
+use anyhow::Result;
 use clap::Parser;
-use cli::Options;
+use cli::{Cli, Command};
 use colored::Colorize;
-use exms::error::ParseError;
 use exms::exam::Exam;
 
 fn main() {
     // Load command line options
-    let options = Options::parse();
+    let options = Cli::parse();
 
     // Handle application error
     if let Err(err) = run(options) {
@@ -19,48 +19,71 @@ fn main() {
     };
 }
 
-fn run(options: Options) -> Result<(), ParseError> {
-    let mut exam = Exam::from_file(&options.file)?;
+fn run(options: Cli) -> Result<()> {
+    match options.command {
+        Command::Summary(args) => {
+            let exam = create_exam(&args.exam_args)?;
 
-    if let Some(max_grade) = options.max_grade {
-        exam.set_max_grade(max_grade);
-    }
+            exam.summary();
+            exam.histogram(args.step);
+            print_students(exam, &args.filter_args, &args.sort_args)?;
+        }
 
-    exam.summary();
+        Command::Statistics(args) => {
+            let exam = create_exam(&args)?;
+            exam.summary();
+        }
 
-    if options.histogram {
-        exam.histogram();
-    }
+        Command::Histogram(args) => {
+            let exam = create_exam(&args.exam_args)?;
+            exam.histogram(args.step)
+        }
 
-    if options.grade_sort {
-        exam.sort_by_grade();
-    }
+        Command::Students(args) => {
+            let exam = create_exam(&args.exam_args)?;
+            print_students(exam, &args.filter_args, &args.sort_args)?;
+        }
 
-    if options.alphabetic_sort {
-        exam.sort_by_alphabetic_order();
-    }
-
-    if let Some(ref students) = options.name_filter {
-        exam.filter_by_name(students);
-    }
-
-    if let Some(ref file_path) = options.file_filter {
-        exam.filter_by_file(file_path)?;
-    }
-
-    // Print filtered statistics only if there is a filter applied
-    if options.name_filter.is_some() || options.file_filter.is_some() {
-        exam.set_name("Filter results");
-        exam.summary();
-
-        if options.histogram {
-            exam.histogram();
+        Command::Download => {
+            std::process::Command::new("scraper").status()?;
         }
     }
 
-    if options.print_students {
-        exam.students();
+    Ok(())
+}
+
+fn create_exam(args: &cli::ExamArgs) -> Result<Exam> {
+    let mut exam = Exam::from_file(&args.file)?;
+
+    if let Some(max_grade) = args.max_grade {
+        exam.set_max_grade(max_grade);
     }
+
+    Ok(exam)
+}
+
+fn print_students(
+    mut exam: Exam,
+    filter_args: &cli::FilterArgs,
+    sort_args: &cli::SortArgs,
+) -> Result<()> {
+    if sort_args.sort_by_grade {
+        exam.sort_by_grade();
+    }
+
+    if sort_args.sort_by_alphabetic_order {
+        exam.sort_by_alphabetic_order();
+    }
+
+    if let Some(names) = &filter_args.name_filter {
+        exam.filter_by_name(names);
+    }
+
+    if let Some(files) = &filter_args.file_filter {
+        exam.filter_by_file(files)?;
+    }
+
+    exam.students();
 
     Ok(())
 }
