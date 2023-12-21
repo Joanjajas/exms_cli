@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 toml = "0.8.8"
 indexmap = { version = "2.1.0", features = ["serde"] }
-anyhow = "1.0.75"
+anyhow = "1.0.76"
