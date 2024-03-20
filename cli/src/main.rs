@@ -44,8 +44,11 @@ fn run(options: Cli) -> Result<()> {
             print_students(exam, &args.filter_args, &args.sort_args)?;
         }
 
-        Command::Download => {
-            std::process::Command::new("scraper").status()?;
+        Command::Download(args) => {
+            std::process::Command::new("python3")
+                .arg("/usr/local/scraper/scraper.py")
+                .arg(args.path)
+                .status()?;
         }
     }
 

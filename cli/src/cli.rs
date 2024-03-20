@@ -22,7 +22,7 @@ pub enum Command {
     Students(StudentsArgs),
 
     /// Downloads the exam results
-    Download,
+    Download(DownloadArgs),
 }
 
 #[derive(Args)]
@@ -107,4 +107,10 @@ pub struct SortArgs {
     /// Sort the students based on their name alphabetically
     #[arg(short = 'a', long)]
     pub sort_by_alphabetic_order: bool,
+}
+
+#[derive(Args, Debug)]
+pub struct DownloadArgs {
+    /// Path to download the exam results
+    pub path: PathBuf,
 }

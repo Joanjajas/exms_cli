@@ -15,11 +15,7 @@ cargo doc --no-deps
 # Copy the binaries and scripts to their respective directories
 sudo cp ./target/release/cli $BIN_DIR/exms
 sudo cp ./target/release/parser $BIN_DIR/parser
-sudo cp scripts/scraper.sh $BIN_DIR/scraper
 sudo cp -r scraper /usr/local/
-
-# Make scraper script executable
-sudo chmod +x /usr/local/bin/scraper
 
 # Get user credentials
 printf "\nIntroduce your intranet username and password:\n"

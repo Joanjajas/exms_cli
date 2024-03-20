@@ -1,3 +1,6 @@
+import sys
+import os
+
 from playwright.sync_api import sync_playwright
 from playwright.sync_api import Page, Playwright
 
@@ -5,13 +8,19 @@ from parser import parse_to_toml
 from logger import log
 
 
-BASE_DIR = "/Users/joan/Downloads/not"
 UPV_LOGIN_URL = "https://intranet.upv.es/"
 USERNAME = ""
 PASSWORD = ""
 
 
 def run(playwright: Playwright):
+
+    if len(sys.argv) < 1:
+        log("No output directory for the exams was provided", level="ERROR")
+        exit(1)
+
+    base_dir = os.path.abspath(sys.argv[1])
+
     # Create a new instance of chromium and open a new page
     chromium = playwright.chromium
     browser = chromium.launch()
@@ -25,7 +34,7 @@ def run(playwright: Playwright):
     goto_grades(page)
 
     # Parses each exam into a toml file
-    parse_to_toml(page, BASE_DIR)
+    parse_to_toml(page, base_dir)
 
 
 def login(page: Page):
