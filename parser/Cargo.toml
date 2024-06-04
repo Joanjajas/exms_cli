@@ -9,4 +9,4 @@ edition = "2021"
 toml = "0.8.10"
 indexmap = { version = "2.2.6", features = ["serde"] }
 toml = "0.8.14"
-anyhow = "1.0.80"
+anyhow = "1.0.86"
