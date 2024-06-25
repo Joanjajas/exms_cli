@@ -66,6 +66,7 @@ def parse_to_toml(page: Page, base_dir: str) -> None:
                         f"Couldn't parse [{subject} -> {exam_name}], error page present",
                         level="ERROR",
                     )
+                    page.go_back()
                     continue
 
                 # Wait for the page to load
